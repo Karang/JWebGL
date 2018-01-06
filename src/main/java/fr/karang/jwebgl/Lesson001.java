@@ -121,9 +121,9 @@ public class Lesson001 {
 		gl.viewport(0, 0, gl.getWidth(), gl.getHeight());
 		gl.clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
 
-		Mat4.perspective(45f, gl.getWidth() / gl.getHeight(), 0.1f, 100.0f, pMatrix);
+		Mat4.perspective(pMatrix, 45f, gl.getWidth() / gl.getHeight(), 0.1f, 100.0f);
+		
 		Mat4.identity(mvMatrix);
-
 		Mat4.translate(mvMatrix, -1.5f, 0.f, -7.f);
 
 		gl.bindBuffer(ARRAY_BUFFER, triangleVertexPositionBuffer);
@@ -134,6 +134,7 @@ public class Lesson001 {
 		gl.drawArrays(TRIANGLES, 0, 3);
 
 		Mat4.translate(mvMatrix, 3.0f, 0.0f, 0.0f);
+		
 		gl.bindBuffer(ARRAY_BUFFER, squareVertexPositionBuffer);
 		gl.vertexAttribPointer(vertexPositionAttribute, 3, FLOAT, false, 0, 0);
 
