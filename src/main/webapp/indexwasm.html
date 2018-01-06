@@ -1,0 +1,230 @@
+<html>
+    <head>
+        <title>Test</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="600" height="600"></canvas>
+        <script type="text/javascript">
+            var runningInstanceMemory = null;
+
+            function bytecoder_IntInMemory(value) {
+                return runningInstanceMemory[value]
+                    + (runningInstanceMemory[value + 1] * 256)
+                    + (runningInstanceMemory[value + 2] * 256 * 256)
+                    + (runningInstanceMemory[value + 3] * 256 * 256 * 256);
+            }
+
+            function bytecoder_logByteArrayAsString(acaller, value) {
+                var theLength = bytecoder_IntInMemory(value + 16);
+                var theData = '';
+                value = value + 20;
+                for (var i=0;i<theLength;i++) {
+                    var theCharCode = bytecoder_IntInMemory(value);
+                    value = value + 4;
+                    theData+= String.fromCharCode(theCharCode);
+                }
+                console.log(theData);
+            }
+
+            function bytecoder_logDebug(caller,value) {
+                console.log(value);
+            }
+			
+			function bytecoder_getString(adr) {
+				var l = bytecoder_IntInMemory(adr+36);
+				console.log(l);
+				var data = '';
+				adr += 40;
+				for (var i=0 ; i<l ; i++) {
+                    var charcode = bytecoder_IntInMemory(adr);
+                    adr += 4;
+                    data += String.fromCharCode(charcode);
+                }
+				console.log(data);
+				return data;
+			}
+			
+			function bytecoder_getFloat32Array(adr) {
+				var l = bytecoder_IntInMemory(adr+16);
+				console.log(l);
+				var data = new Float32Array(runningInstanceMemory.buffer, adr+20, l);
+				console.log(data);
+				return data;
+			}
+
+            var lastRuntime = 0;
+            var lastRuntimeTimeSeries = [];
+			
+			var webglCtx = [];
+			var webglProgram = [];
+			var webglShader = [];
+			var webglBuffer = [];
+			var webglUniformLoc = [];
+
+            // Our module for dynamic linking
+            var importObject = {
+				jwebgl: {
+					getWebGLCtxById: function(aCaller, id) {
+						var canvas = document.getElementById(bytecoder_getString(id));
+						var ctx = canvas.getContext("webgl");
+						webglCtx.push(ctx);
+						return webglCtx.length-1;
+					}
+				},
+				webglcontext: {
+					getWidth: function(ref) {
+						return webglCtx[ref].canvas.width;
+					},
+					getHeight: function(ref) {
+						return webglCtx[ref].canvas.height;
+					},
+					createShader: function(ref, type) {
+						var shader = webglCtx[ref].createShader(type);
+						webglShader.push(shader);
+						console.log("New shader : "+(webglShader.length-1));
+						return webglShader.length-1;
+					},
+					shaderSource: function(ref, shader, source) {
+						webglCtx[ref].shaderSource(webglShader[shader], bytecoder_getString(source));
+					},
+					compileShader: function(ref, shader) {
+						webglCtx[ref].compileShader(webglShader[shader]);
+					},
+					getShaderInfoLog: function(ref, shader) {
+						console.log(webglCtx[ref].getShaderInfoLog(webglShader[shader]));
+						return webglCtx[ref].getShaderInfoLog(webglShader[shader]);
+					},
+					enable: function(ref, type) {
+						webglCtx[ref].enable(type);
+					},
+					clearColor: function(ref, r, g, b, a) {
+						webglCtx[ref].clearColor(r, g, b, a);
+					},
+					createBuffer: function(ref) {
+						var buffer = webglCtx[ref].createBuffer();
+						webglBuffer.push(buffer);
+						console.log("New buffer : "+(webglBuffer.length-1));
+						return webglBuffer.length-1;
+					},
+					getUniformLocation: function(ref, program, name) {
+						var loc = webglCtx[ref].getUniformLocation(webglProgram[program], bytecoder_getString(name));
+						webglUniformLoc.push(loc);
+						return webglUniformLoc.length-1;
+					},
+					viewport: function(ref, x, y, width, height) {
+						console.log(x+" "+y+" "+width+" "+height);
+						webglCtx[ref].viewport(x, y, width, height);
+					},
+					useProgram: function(ref, program) {
+						webglCtx[ref].useProgram(webglProgram[program]);
+					},
+					bufferData: function(ref, target, data, usage) {
+						webglCtx[ref].bufferData(target, bytecoder_getFloat32Array(data), usage);
+					},
+					getAttribLocation: function(ref, program, name) {
+						return webglCtx[ref].getAttribLocation(webglProgram[program], bytecoder_getString(name));
+					},
+					linkProgram: function(ref, program) {
+						webglCtx[ref].linkProgram(webglProgram[program]);
+					},
+					bindBuffer: function(ref, target, buffer) {
+						console.log("Bind buffer : "+buffer);
+						webglCtx[ref].bindBuffer(target, webglBuffer[buffer]);
+					},
+					attachShader: function(ref, program, shader) {
+						console.log("Attach "+shader+" to "+program);
+						webglCtx[ref].attachShader(webglProgram[program], webglShader[shader]);
+					},
+					vertexAttribPointer: function(ref, index, size, type, normalized, stride, offset) {
+						webglCtx[ref].vertexAttribPointer(index, size, type, normalized>0, stride, offset);
+					},
+					enableVertexAttribArray: function(ref, index) {
+						webglCtx[ref].enableVertexAttribArray(index);
+					},
+					createProgram: function(ref) {
+						var prog = webglCtx[ref].createProgram();
+						webglProgram.push(prog);
+						return webglProgram.length-1;
+					},
+					uniformMatrix4fv: function(ref, loc, transpose, value) {
+						webglCtx[ref].uniformMatrix4fv(webglUniformLoc[loc], transpose>0, bytecoder_getFloat32Array(value));
+					},
+					drawArrays: function(ref, mode, first, count) {
+						webglCtx[ref].drawArrays(mode, first, count);
+					},
+					clear: function(ref, mask) {
+						webglCtx[ref].clear(mask);
+					}
+				},
+				
+                system: {
+                    currentTimeMillis: function(aCaller) {return (Date.now() - 1514628979781);},
+                    nanoTime: function(aCaller) {return (Date.now() - 1514628979781) * 1000000;},
+                    logDebug: bytecoder_logDebug,
+                    logByteArrayAsString: bytecoder_logByteArrayAsString,
+                },
+                math: {
+                    floor: function (thisref, p1) {return Math.floor(p1);},
+                    ceil: function (thisref, p1) {return Math.ceil(p1);},
+                    sin: function (thisref, p1) {return Math.sin(p1);},
+                    cos: function  (thisref, p1) {return Math.cos(p1);},
+                    round: function  (thisref, p1) {return Math.round(p1);},
+                    float_rem: function(a, b) {return a % b;},
+                    sqrt: function(thisref, p1) {return Math.sqrt(p1);},
+                    add: function(thisref, p1, p2) {return p1 + p2;},
+					tan:function(thisref, p1) {return Math.tan(p1);}
+                },
+                debug: {
+                    logRuntime : function(acaller, a) {
+                        lastRuntimeTimeSeries.push(a);
+                        if (lastRuntimeTimeSeries.length > 500) {
+                            lastRuntimeTimeSeries.shift();
+                        }
+                        lastRuntime = (lastRuntime + a) / 2;
+                        document.getElementById("stats_avg").innerText = '' + lastRuntime.toFixed(2) + " ms";
+
+                        [50, 75, 95, 98, 99].forEach(function (element, index, array) {
+                            var q = quantile(lastRuntimeTimeSeries, element).toFixed(2) + " ms";
+                            document.getElementById("stats_" + element).innerText = q;
+
+                        });
+                    }
+                },
+                profiler: {
+                    logMemoryLayoutBlock: function(aCaller, aStart, aUsed, aNext) {
+                        if (aUsed == 1) return;
+                        console.log('   Block at ' + aStart + ' status is ' + aUsed + ' points to ' + aNext);
+                        console.log('      Block size is ' + bytecoder_IntInMemory(aStart));
+                        console.log('      Object type ' + bytecoder_IntInMemory(aStart + 12));
+                    }
+                }
+            };
+
+            // Try to load the WASM file
+            var request = new XMLHttpRequest();
+            request.open('GET', 'bytecoder.wasm');
+            request.responseType = 'arraybuffer';
+            request.send();
+
+            var runningInstance;
+
+            var instantiated = function(result) {
+                var wasmModule = result.module;
+                runningInstance = result.instance;
+                runningInstanceMemory = new Uint8Array(runningInstance.exports.memory.buffer);
+                runningInstance.exports.initMemory(0);
+                console.log("Memory initialized");
+                runningInstance.exports.bootstrap(0);
+                console.log("Bootstrapped");
+                runningInstance.exports.main(0);
+                console.log("Ready for action!");
+            };
+
+            request.onload = function() {
+                var bytes = request.response;
+                WebAssembly.instantiate(bytes, importObject).then(instantiated);
+            };
+
+        </script>
+    </body>
+</html>
