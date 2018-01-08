@@ -15,6 +15,6 @@
  */
 package fr.karang.jwebgl.webgl;
 
-public class WebGLActiveInfo {
+public interface WebGLActiveInfo {
 
 }

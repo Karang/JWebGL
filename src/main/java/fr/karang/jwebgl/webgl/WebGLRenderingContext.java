@@ -18,11 +18,17 @@ package fr.karang.jwebgl.webgl;
 import de.mirkosertic.bytecoder.annotations.Import;
 
 public class WebGLRenderingContext {
-	
+
+    public static WebGLRenderingContext gl;
+
+    public static void setContext(WebGLRenderingContext ctx) {
+        gl = ctx;
+    }
+
     @Import(module = "jwebgl", name = "getWebGLCtxById")
     public static native WebGLRenderingContext getWebGLCtxById(String canvas);
-	
-	/* ClearBufferMask */
+
+    /* ClearBufferMask */
     public static final int DEPTH_BUFFER_BIT               = 0x00000100;
     public static final int STENCIL_BUFFER_BIT             = 0x00000400;
     public static final int COLOR_BUFFER_BIT               = 0x00004000;
@@ -442,10 +448,10 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "getWidth")
     public native int getWidth();
-    
+
     @Import(module = "webglcontext", name = "getHeight")
     public native int getHeight();
-    
+
     /*readonly attribute HTMLCanvasElement canvas;
     readonly attribute int drawingBufferWidth;
     readonly attribute int drawingBufferHeight;*/
@@ -459,16 +465,16 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "activeTexture")
     public native void activeTexture(int texture);
-    
+
     @Import(module = "webglcontext", name = "attachShader")
     public native void attachShader(WebGLProgram program, WebGLShader shader);
-    
+
     @Import(module = "webglcontext", name = "bindAttribLocation")
     public native void bindAttribLocation(WebGLProgram program, int index, String name);
-    
+
     @Import(module = "webglcontext", name = "bindBuffer")
     public native void bindBuffer(int target, WebGLBuffer buffer);
-    
+
     @Import(module = "webglcontext", name = "bindFramebuffer")
     public native void bindFramebuffer(int target, WebGLFramebuffer framebuffer);
 
@@ -492,7 +498,7 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "blendFuncSeparate")
     public native void blendFuncSeparate(int srcRGB, int dstRGB,
-                           int srcAlpha, int dstAlpha);
+            int srcAlpha, int dstAlpha);
 
 
     @Import(module = "webglcontext", name = "bufferData")
@@ -503,7 +509,7 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "bufferSubData")
     public native void bufferSubData(int target, int offset, float[] data);
-    
+
     // TODO: other types of BufferSource
 
 
@@ -543,17 +549,17 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "copyTexImage2D")
     public native void copyTexImage2D(int target, int level, int internalformat,
-                        int x, int y, int width, int height,
-                        int border);
+            int x, int y, int width, int height,
+            int border);
 
     @Import(module = "webglcontext", name = "copyTexSubImage2D")
     public native void copyTexSubImage2D(int target, int level, int xoffset, int yoffset,
-                           int x, int y, int width, int height);
+            int x, int y, int width, int height);
 
 
     @Import(module = "webglcontext", name = "createBuffer")
     public native WebGLBuffer createBuffer();
-    
+
     @Import(module = "webglcontext", name = "createFramebuffer")
     public native WebGLFramebuffer createFramebuffer();
 
@@ -632,12 +638,12 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "framebufferRenderbuffer")
     public native void framebufferRenderbuffer(int target, int attachment,
-                                 int renderbuffertarget,
-                                 WebGLRenderbuffer renderbuffer);
+            int renderbuffertarget,
+            WebGLRenderbuffer renderbuffer);
 
     @Import(module = "webglcontext", name = "framebufferTexture2D")
     public native void framebufferTexture2D(int target, int attachment, int textarget,
-                              WebGLTexture texture, int level);
+            WebGLTexture texture, int level);
 
     @Import(module = "webglcontext", name = "frontFace")
     public native void frontFace(int mode);
@@ -660,7 +666,7 @@ public class WebGLRenderingContext {
     @Import(module = "webglcontext", name = "getAttribLocation")
     public native int getAttribLocation(WebGLProgram program, String name);
 
-    
+
     //TODO:
     /*@Import(module = "webglcontext", name = "getBufferParameter")
     public native any getBufferParameter(int target, int pname);
@@ -700,7 +706,7 @@ public class WebGLRenderingContext {
     public native String getShaderSource(WebGLShader shader);
 
 
-  //TODO:
+    //TODO:
     /*@Import(module = "webglcontext", name = "getTexParameter")
     public native any getTexParameter(int target, int pname);
 
@@ -759,7 +765,7 @@ public class WebGLRenderingContext {
     public native void polygonOffset(float factor, float units);
 
 
-  //TODO:
+    //TODO:
     /*@Import(module = "webglcontext", name = "readPixels")
     public native void readPixels(int x, int y, int width, int height,
                     int format, int type, ArrayBufferView pixels);*/
@@ -767,7 +773,7 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "renderbufferStorage")
     public native void renderbufferStorage(int target, int internalformat,
-                             int width, int height);
+            int width, int height);
 
     @Import(module = "webglcontext", name = "sampleCoverage")
     public native void sampleCoverage(float value, boolean invert);
@@ -799,7 +805,7 @@ public class WebGLRenderingContext {
     public native void stencilOpSeparate(int face, int fail, int zfail, int zpass);
 
 
-  //TODO:
+    //TODO:
     /*@Import(module = "webglcontext", name = "texImage2D")
     public native void texImage2D(int target, int level, int internalformat,
                     int width, int height, int border, int format,
@@ -817,7 +823,7 @@ public class WebGLRenderingContext {
     public native void texParameteri(int target, int pname, int param);
 
 
-  //TODO:
+    //TODO:
     /*@Import(module = "webglcontext", name = "texSubImage2D")
     public native void texSubImage2D(int target, int level, int xoffset, int yoffset,
                        int width, int height,
@@ -925,7 +931,7 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "vertexAttribPointer")
     public native void vertexAttribPointer(int index, int size, int type,
-                             boolean normalized, int stride, int offset);
+            boolean normalized, int stride, int offset);
 
 
     @Import(module = "webglcontext", name = "viewport")

@@ -15,15 +15,13 @@
  */
 package fr.karang.jwebgl;
 
-import fr.karang.jwebgl.webgl.WebGLProgram;
+import fr.karang.jwebgl.webgl.WebGLBuffer;
 import fr.karang.jwebgl.webgl.WebGLRenderingContext;
-import fr.karang.jwebgl.webgl.WebGLShader;
-import fr.karang.jwebgl.webgl.WebGLUniformLocation;
 
 import static fr.karang.jwebgl.webgl.WebGLRenderingContext.*;
 
 import fr.karang.jwebgl.glmatrix.Mat4;
-import fr.karang.jwebgl.webgl.WebGLBuffer;
+import fr.karang.jwebgl.util.Shader;
 
 /**
  * WebGL Lesson 1 – A triangle and a square
@@ -34,26 +32,21 @@ public class Lesson001 {
 	public static String fragShader =
 			"precision mediump float;\r\n" + 
 			"\r\n" + 
-			"  void main(void) {\r\n" + 
+			"void main(void) {\r\n" + 
 			"    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\r\n" + 
-			"  }";
+			"}";
 
 	public static String vertShader =
 			"attribute vec3 aVertexPosition;\r\n" + 
 			"\r\n" + 
-			"  uniform mat4 uMVMatrix;\r\n" + 
-			"  uniform mat4 uPMatrix;\r\n" + 
+			"uniform mat4 uMVMatrix;\r\n" + 
+			"uniform mat4 uPMatrix;\r\n" + 
 			"\r\n" + 
-			"  void main(void) {\r\n" + 
+			"void main(void) {\r\n" + 
 			"    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\r\n" + 
-			"  }";
-
-	public static WebGLRenderingContext gl;
+			"}";
 	
-	public static WebGLProgram prog;
-	public static int vertexPositionAttribute;
-	public static WebGLUniformLocation pMatrixUniform;
-	public static WebGLUniformLocation mvMatrixUniform;
+	public static Shader shader;
 	
 	public static WebGLBuffer triangleVertexPositionBuffer;
 	public static WebGLBuffer squareVertexPositionBuffer;
@@ -62,31 +55,7 @@ public class Lesson001 {
 	public static Mat4 mvMatrix = new Mat4();
 
 	public static void initShaders() {
-		WebGLShader frag = gl.createShader(FRAGMENT_SHADER);
-		gl.shaderSource(frag, fragShader);
-		gl.compileShader(frag);
-
-		System.out.println(gl.getShaderInfoLog(frag));
-
-		WebGLShader vert = gl.createShader(VERTEX_SHADER);
-		gl.shaderSource(vert, vertShader);
-		gl.compileShader(vert);
-
-		System.out.println(gl.getShaderInfoLog(vert));
-
-		prog = gl.createProgram();
-
-		gl.attachShader(prog, vert);
-		gl.attachShader(prog, frag);
-		gl.linkProgram(prog);
-
-		gl.useProgram(prog);
-
-		vertexPositionAttribute = gl.getAttribLocation(prog, "aVertexPosition");
-		gl.enableVertexAttribArray(vertexPositionAttribute);
-
-		pMatrixUniform = gl.getUniformLocation(prog, "uPMatrix");
-		mvMatrixUniform = gl.getUniformLocation(prog, "uMVMatrix");
+		shader = new Shader(vertShader, fragShader);
 	}
 
 	public static void initBuffers() {
@@ -113,8 +82,8 @@ public class Lesson001 {
 	}
 
 	public static void setMatrixUniforms() {
-		gl.uniformMatrix4fv(pMatrixUniform, false, pMatrix.m);
-		gl.uniformMatrix4fv(mvMatrixUniform, false, mvMatrix.m);
+		shader.uniformMatrix4fv("uMVMatrix", false, mvMatrix);
+		shader.uniformMatrix4fv("uPMatrix", false, pMatrix);
 	}
 
 	public static void drawScene() {
@@ -127,8 +96,8 @@ public class Lesson001 {
 		Mat4.translate(mvMatrix, -1.5f, 0.f, -7.f);
 
 		gl.bindBuffer(ARRAY_BUFFER, triangleVertexPositionBuffer);
-		gl.vertexAttribPointer(vertexPositionAttribute, 3, FLOAT, false, 0, 0);
-
+		gl.vertexAttribPointer(shader.getAttribLocation("aVertexPosition"), 3, FLOAT, false, 0, 0);
+		
 		setMatrixUniforms();
 
 		gl.drawArrays(TRIANGLES, 0, 3);
@@ -136,15 +105,15 @@ public class Lesson001 {
 		Mat4.translate(mvMatrix, 3.0f, 0.0f, 0.0f);
 		
 		gl.bindBuffer(ARRAY_BUFFER, squareVertexPositionBuffer);
-		gl.vertexAttribPointer(vertexPositionAttribute, 3, FLOAT, false, 0, 0);
+		gl.vertexAttribPointer(shader.getAttribLocation("aVertexPosition"), 3, FLOAT, false, 0, 0);
 
 		setMatrixUniforms();
 
 		gl.drawArrays(TRIANGLE_STRIP, 0, 4);
 	}
-
+	
 	public static void main(String[] args) {
-		gl = WebGLRenderingContext.getWebGLCtxById("canvas");
+		setContext(WebGLRenderingContext.getWebGLCtxById("canvas"));
 		initShaders();
 		initBuffers();
 
