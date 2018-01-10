@@ -506,6 +506,9 @@ public class WebGLRenderingContext {
 
     @Import(module = "webglcontext", name = "bufferData")
     public native void bufferData(int target, float[] data, int usage);
+    
+    @Import(module = "webglcontext", name = "bufferData_int")
+    public native void bufferData(int target, int[] data, int usage);
 
     @Import(module = "webglcontext", name = "bufferSubData")
     public native void bufferSubData(int target, int offset, float[] data);

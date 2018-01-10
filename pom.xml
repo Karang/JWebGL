@@ -42,7 +42,7 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
-                            <mainClass>fr.karang.jwebgl.Lesson001</mainClass>
+                            <mainClass>fr.karang.jwebgl.Lesson004</mainClass>
                             <backend>wasm</backend>
                         </configuration>
                     </execution>

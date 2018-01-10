@@ -51,6 +51,19 @@
 				console.log(data);
 				return data;
 			}
+			
+			function bytecoder_getInt16Array(adr) {
+				var l = bytecoder_IntInMemory(adr+16);
+				console.log(l);
+				var data = [];
+				adr += 20
+				for (var i=0 ; i<l ; i++) {
+					data.push(bytecoder_IntInMemory(adr));
+					adr += 4;
+				}
+				console.log(data);
+				return new Uint16Array(data);
+			}
 
             var lastRuntime = 0;
             var lastRuntimeTimeSeries = [];
@@ -126,6 +139,9 @@
 					bufferData: function(ref, target, data, usage) {
 						webglCtx[ref].bufferData(target, bytecoder_getFloat32Array(data), usage);
 					},
+					bufferData_int: function(ref, target, data, usage) {
+						webglCtx[ref].bufferData(target, bytecoder_getInt16Array(data), usage);
+					},
 					getAttribLocation: function(ref, program, name) {
 						return webglCtx[ref].getAttribLocation(webglProgram[program], bytecoder_getString(name));
 					},
@@ -157,6 +173,9 @@
 					drawArrays: function(ref, mode, first, count) {
 						webglCtx[ref].drawArrays(mode, first, count);
 					},
+					drawElements: function(ref, mode, count, type, offset) {
+						webglCtx[ref].drawElements(mode, count, type, offset);
+					},
 					clear: function(ref, mask) {
 						webglCtx[ref].clear(mask);
 					}
@@ -177,7 +196,8 @@
                     float_rem: function(a, b) {return a % b;},
                     sqrt: function(thisref, p1) {return Math.sqrt(p1);},
                     add: function(thisref, p1, p2) {return p1 + p2;},
-					tan:function(thisref, p1) {return Math.tan(p1);}
+					tan:function(thisref, p1) {return Math.tan(p1);},
+					toRadians:function(thisref, p1) {return p1 * Math.PI / 180;}
                 },
                 debug: {
                     logRuntime : function(acaller, a) {
