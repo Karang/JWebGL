@@ -243,6 +243,13 @@
                 console.log("Bootstrapped");
                 runningInstance.exports.main(0);
                 console.log("Ready for action!");
+                
+                var tick = function() {
+	                runningInstance.exports.tick(0);
+	                window.requestAnimationFrame(tick);
+	            };
+	            
+	            tick();
             };
 
             request.onload = function() {

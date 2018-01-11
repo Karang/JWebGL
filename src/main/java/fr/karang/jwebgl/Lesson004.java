@@ -21,6 +21,7 @@ import static fr.karang.jwebgl.webgl.WebGLRenderingContext.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.mirkosertic.bytecoder.annotations.Export;
 import fr.karang.jwebgl.glmatrix.Mat4;
 import fr.karang.jwebgl.glmatrix.Vec3;
 import fr.karang.jwebgl.util.Shader;
@@ -68,6 +69,7 @@ public class Lesson004 {
     public static Mat4 pMatrix = new Mat4();
     public static Mat4 mvMatrix = new Mat4();
 
+    public static long lastTime = 0;
     public static float rPyramid = 0;
     public static float rCube = 0;
 
@@ -175,7 +177,7 @@ public class Lesson004 {
 
         cubeVertexColorBuffer = gl.createBuffer();
         gl.bindBuffer(ARRAY_BUFFER, cubeVertexColorBuffer);
-        /*float[][] packed_colors = new float[][] {
+        float[][] packed_colors = new float[][] {
             {1.0f, 0.0f, 0.0f, 1.0f}, // Front face
             {1.0f, 1.0f, 0.0f, 1.0f}, // Back face
             {0.0f, 1.0f, 0.0f, 1.0f}, // Top face
@@ -193,39 +195,7 @@ public class Lesson004 {
                 colors[k+2] = color[2];
                 colors[k+3] = color[3];
             }
-        }*/
-        colors = new float[] {
-                // Front face
-                1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 1.0f,
-                // Back face
-                1.0f, 1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 0.0f, 1.0f,
-                // Top face
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
-                0.0f, 1.0f, 0.0f, 1.0f,
-                // Bottom face
-                1.0f, 0.5f, 0.5f, 1.0f,
-                1.0f, 0.5f, 0.5f, 1.0f,
-                1.0f, 0.5f, 0.5f, 1.0f,
-                1.0f, 0.5f, 0.5f, 1.0f,
-                // Right face
-                1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 1.0f, 1.0f,
-                // Left face
-                0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, 0.0f, 1.0f, 1.0f
-        };
+        }
         gl.bufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
 
         cubeVertexIndexBuffer = gl.createBuffer();
@@ -281,6 +251,22 @@ public class Lesson004 {
         gl.drawElements(TRIANGLES, 36, UNSIGNED_SHORT, 0);
         mvPopMatrix();
     }
+    
+    public static void animate() {
+        long timeNow = System.currentTimeMillis();
+        if (lastTime != 0) {
+            long elapsed =  timeNow - lastTime;
+            rPyramid += (90 * elapsed) / 1000.0;
+            rCube -= (75 * elapsed) / 1000.0;
+        }
+        lastTime = timeNow;
+    }
+    
+    @Export("tick")
+    public static void tick() {
+        animate();
+        drawScene();
+    }
 
     public static void main(String[] args) {
         setContext(WebGLRenderingContext.getWebGLCtxById("canvas"));
@@ -289,7 +275,5 @@ public class Lesson004 {
 
         gl.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.enable(DEPTH_TEST);
-
-        drawScene();
     }
 }
