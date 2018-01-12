@@ -524,7 +524,7 @@ public class Mat4 {
 	 */
 	public static Mat4 rotate(Mat4 out, float rad, Vec3 axis) {
 		float x = axis.x, y = axis.y, z = axis.z;
-		float len = (float) Math.sqrt(x * x + y * y + z * z);
+		float len = (float) StrictMath.sqrt(x * x + y * y + z * z);
 		float s, c, t;
 		float a00, a01, a02, a03;
 		float a10, a11, a12, a13;
@@ -699,9 +699,9 @@ public class Mat4 {
 		float m32 = mat.m[9];
 		float m33 = mat.m[10];
 
-		out.x = (float) Math.sqrt(m11 * m11 + m12 * m12 + m13 * m13);
-		out.y = (float) Math.sqrt(m21 * m21 + m22 * m22 + m23 * m23);
-		out.z = (float) Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33);
+		out.x = (float) StrictMath.sqrt(m11 * m11 + m12 * m12 + m13 * m13);
+		out.y = (float) StrictMath.sqrt(m21 * m21 + m22 * m22 + m23 * m23);
+		out.z = (float) StrictMath.sqrt(m31 * m31 + m32 * m32 + m33 * m33);
 
 		return out;
 	}
@@ -719,25 +719,25 @@ public class Mat4 {
 		float S = 0;
 
 		if (trace > 0) {
-			S = (float) (Math.sqrt(trace + 1.0) * 2);
+			S = (float) (StrictMath.sqrt(trace + 1.0) * 2);
 			out.w = 0.25f * S;
 			out.x = (mat.m[6] - mat.m[9]) / S;
 			out.y = (mat.m[8] - mat.m[2]) / S;
 			out.z = (mat.m[1] - mat.m[4]) / S;
 		} else if ((mat.m[0] > mat.m[5])&&(mat.m[0] > mat.m[10])) {
-			S = (float) Math.sqrt(1.0 + mat.m[0] - mat.m[5] - mat.m[10]) * 2f;
+			S = (float) StrictMath.sqrt(1.0 + mat.m[0] - mat.m[5] - mat.m[10]) * 2f;
 			out.w = (mat.m[6] - mat.m[9]) / S;
 			out.x = 0.25f * S;
 			out.y = (mat.m[1] + mat.m[4]) / S;
 			out.z = (mat.m[8] + mat.m[2]) / S;
 		} else if (mat.m[5] > mat.m[10]) {
-			S = (float) Math.sqrt(1.0 + mat.m[5] - mat.m[0] - mat.m[10]) * 2f;
+			S = (float) StrictMath.sqrt(1.0 + mat.m[5] - mat.m[0] - mat.m[10]) * 2f;
 			out.w = (mat.m[8] - mat.m[2]) / S;
 			out.x = (mat.m[1] + mat.m[4]) / S;
 			out.y = 0.25f * S;
 			out.z = (mat.m[6] + mat.m[9]) / S;
 		} else {
-			S = (float) Math.sqrt(1.0 + mat.m[10] - mat.m[0] - mat.m[5]) * 2f;
+			S = (float) StrictMath.sqrt(1.0 + mat.m[10] - mat.m[0] - mat.m[5]) * 2f;
 			out.w = (mat.m[1] - mat.m[4]) / S;
 			out.x = (mat.m[8] + mat.m[2]) / S;
 			out.y = (mat.m[6] + mat.m[9]) / S;
@@ -885,7 +885,7 @@ public class Mat4 {
 		z1 = eyey - centery;
 		z2 = eyez - centerz;
 
-		len = (float) (1.f / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2));
+		len = (float) (1.f / StrictMath.sqrt(z0 * z0 + z1 * z1 + z2 * z2));
 		z0 *= len;
 		z1 *= len;
 		z2 *= len;
@@ -893,7 +893,7 @@ public class Mat4 {
 		x0 = upy * z2 - upz * z1;
 		x1 = upz * z0 - upx * z2;
 		x2 = upx * z1 - upy * z0;
-		len = (float) Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+		len = (float) StrictMath.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
 		if (len == 0.f) {
 			x0 = 0.f;
 			x1 = 0.f;
@@ -909,7 +909,7 @@ public class Mat4 {
 		y1 = z2 * x0 - z0 * x2;
 		y2 = z0 * x1 - z1 * x0;
 
-		len = (float) Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
+		len = (float) StrictMath.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
 		if (len == 0.f) {
 			y0 = 0.f;
 			y1 = 0.f;
@@ -964,7 +964,7 @@ public class Mat4 {
 
 		float len = z0*z0 + z1*z1 + z2*z2;
 		if (len > 0) {
-			len = (float) (1.f / Math.sqrt(len));
+			len = (float) (1.f / StrictMath.sqrt(len));
 			z0 *= len;
 			z1 *= len;
 			z2 *= len;

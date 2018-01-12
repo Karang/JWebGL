@@ -36,26 +36,26 @@ public class Lesson004 {
 
     public static String fragShader =
             "precision mediump float;\r\n" + 
-                    "\r\n" + 
-                    "varying vec4 vColor;\r\n" + 
-                    "\r\n" + 
-                    "void main(void) {\r\n" + 
-                    "	gl_FragColor = vColor;\r\n" + 
-                    "}";
+            "\r\n" + 
+            "varying vec4 vColor;\r\n" + 
+            "\r\n" + 
+            "void main(void) {\r\n" + 
+            "	gl_FragColor = vColor;\r\n" + 
+            "}";
 
     public static String vertShader =
             "attribute vec3 aVertexPosition;\r\n" + 
-                    "attribute vec4 aVertexColor;\r\n" + 
-                    "\r\n" + 
-                    "uniform mat4 uMVMatrix;\r\n" + 
-                    "uniform mat4 uPMatrix;\r\n" + 
-                    "\r\n" + 
-                    "varying vec4 vColor;\r\n" + 
-                    "\r\n" + 
-                    "void main(void) {\r\n" + 
-                    "	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\r\n" + 
-                    "	vColor = aVertexColor;\r\n" + 
-                    "}";
+            "attribute vec4 aVertexColor;\r\n" + 
+            "\r\n" + 
+            "uniform mat4 uMVMatrix;\r\n" + 
+            "uniform mat4 uPMatrix;\r\n" + 
+            "\r\n" + 
+            "varying vec4 vColor;\r\n" + 
+            "\r\n" + 
+            "void main(void) {\r\n" + 
+            "	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\r\n" + 
+            "	vColor = aVertexColor;\r\n" + 
+            "}";
 
     public static Shader shader;
 
